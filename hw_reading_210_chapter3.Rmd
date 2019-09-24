@@ -1,0 +1,212 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+##*_Joseph Randolph_*##
+
+##3 Data visualisation##
+This chapter focusses on ggplot2, one of the core members of the tidyverse
+```{r}
+library(tidyverse)
+ggplot2::mpg #laod mpg dataframe
+
+```
+```{r}
+names(mpg)
+```
+
+```{r}
+ggplot(data = mpg) + #cartesian graph w/ poits
+  geom_point(mapping = aes(x = displ, y = hwy))
+```
+
+You only need to install a package once, but you need to reload it every time you start a new session.
+
+If we need to be explicit about where a function (or dataset) comes from, we’ll use the special form package::function(). For example, ggplot2::ggplot() tells you explicitly that we’re using the ggplot() function from the ggplot2 package.
+
+##3.2.3 A graphing template##
+turn code into a reusable template for graphs with ggplot2.
+To make a graph, replace the bracketed sections in the code below with a dataset, a geom function, or a collection of mappings.
+
+ggplot(data = <DATA>) + 
+  <GEOM_FUNCTION>(mapping = aes(<MAPPINGS>))
+  
+
+##3.2.4 Exercises##
+Run ggplot(data = mpg). What do you see? # nothing! empty graph
+```{r}
+ggplot(data = mpg)
+```
+
+
+How many rows are in mpg? How many columns? #234 rows & 11
+```{r}
+nrow(mpg)
+length(mpg)
+```
+
+
+What does the drv variable describe? Read the help for ?mpg to find out.
+```{r}
+?mpg       
+```
+drv
+f = front-wheel drive, r = rear wheel drive, 4 = 4wd
+Make a scatterplot of hwy vs cyl.
+
+What happens if you make a scatterplot of class vs drv? Why is the plot not useful?
+
+thet are both non numeric data
+```{r}
+ggplot(data = mpg) + #cartesian graph w/ poits
+  geom_point(mapping = aes(x = class, y = drv))
+```
+You can add a third variable, like class, to a two dimensional scatterplot by mapping it to an aesthetic. An aesthetic is a visual property of the objects in your plot.
+
+
+```{r}
+#ggplot(data = mpg) +
+ # geom_point(mapping = aes(x = displ, y = hwy))
+ggplot(data = mpg) +
+  geom_point(mapping = aes(x = displ, y = hwy, color= class)) # add 'color= class' to get color and key
+
+#use asign ment in code
+f <- ggplot(data = mpg)
+f+geom_point(mapping = aes(x = displ, y = hwy, color= class))#aes =astetics color, shape, size mus t go in astetics
+#f+geom_point(mapping = aes(x = displ, y = hwy, color= class, size=class))#add size dosent look good
+#f+geom_point(mapping = aes(x = displ, y = hwy, shape= class))#add shape dosent look good
+#f+geom_point(mapping = aes(x = displ, y = hwy, shape= class,size=class,color= class))# add multiple  customizations
+```
+mapped class to the color aesthetic, but we could have mapped class to the size aesthetic in the same way. In this case, the exact size of each point would reveal its class affiliation. We get a warning here, because mapping an unordered variable (class) to an ordered aesthetic (size) is not a good idea.
+
+
+```{r}
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy, size = class))
+```
+
+```{r}
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy, alpha = class))
+
+
+```
+
+```{r}
+
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy, shape = class))
+```
+
+
+
+```{r}
+
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy), color = "blue")
+```
+
+
+
+
+What’s gone wrong with this code? Why are the points not blue?
+
+The color is in side the aes
+
+```{r}
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy, color = "blue"))
+
+```
+
+To facet your plot by a single variable, use facet_wrap()
+```{r}
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy)) + 
+  facet_wrap(~ class, nrow = 2)
+```
+
+3.5.1 Exercises
+What happens if you facet on a continuous variable?
+
+What do the empty cells in plot with facet_grid(drv ~ cyl) mean? How do they relate to this plot?
+
+```{r}
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = drv, y = cyl))
+
+```
+
+
+What plots does the following code make? What does . do?
+ 'facet_grid(<col> ~ .)' makes rows of facets
+ 'facet_grid( . ~ <col>)' makes column of facets
+```{r}
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy)) +
+  facet_grid(drv ~ .)
+
+```
+
+```{r}
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy)) +
+  facet_grid(. ~ cyl)
+
+```
+
+##3.6 Geometric objects##
+How are these two plots similar? Both plots contain the same x variable, the same y variable, and both describe the same data
+```{r}
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy))
+
+```
+
+```{r}
+# right
+ggplot(data = mpg) + 
+  geom_smooth(mapping = aes(x = displ, y = hwy))
+```
+
+```{r}
+ggplot(data = mpg) + 
+  geom_smooth(mapping = aes(x = displ, y = hwy, linetype = drv))
+```
+
+
+3.8 Position adjustments
+There’s one more piece of magic associated with bar charts. You can colour a bar chart using either the colour aesthetic, or, more usefully, fill:
+```{r}
+ggplot2::diamonds 
+
+```
+```{r}
+library(viridisLite)
+```
+
+
+```{r}
+ggplot(data = diamonds) + 
+  geom_bar(mapping = aes(x = cut, colour = cut))
+
+```
+
+
+```{r}
+ggplot(data = diamonds) + 
+  geom_bar(mapping = aes(x = cut, fill = cut))
+```
+
+```{r}
+ggplot(data = diamonds) + 
+  geom_bar(mapping = aes(x = cut, fill = clarity))
+```
+
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
+
